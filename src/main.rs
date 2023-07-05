@@ -1,3 +1,10 @@
+use std::vec;
+
+#[derive(Debug)]
+struct Foo {
+    value: usize
+}
+
 fn main() {
     ownership();
     borrowing();
@@ -5,6 +12,11 @@ fn main() {
     scoping();
     ownership_functions();
     functions_references();
+
+    let vector = vec![Foo{value: 1}, Foo{value: 2}, Foo{value: 3}];
+
+    reverse_and_print(&vector);
+    reverse_and_print(&vector);
 }
 
 
@@ -64,4 +76,13 @@ fn take_ownership(value: String) -> String {
 
 fn calculate_length(s: &String) -> usize {
     s.len() // References can be used for read-only operations
+}
+
+fn reverse_and_print(foo: &Vec<Foo>) {
+    // foo.reverse();
+    
+    // for f in foo.iter() {
+    for f in foo.iter().rev() {
+        println!("{:?}", f.value);
+    }
 }
