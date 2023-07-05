@@ -12,6 +12,7 @@ fn main() {
     scoping();
     ownership_functions();
     functions_references();
+    copy_variables();
 
     let vector = vec![Foo{value: 1}, Foo{value: 2}, Foo{value: 3}];
 
@@ -67,6 +68,34 @@ fn functions_references() {
     let original = String::from("Original");
     let length = calculate_length(&original); // Passes a reference to the function
     println!("Original: {}, Length: {}", original, length);
+}
+
+fn copy_variables() {
+    let num1 = 42;
+    let num2 = num1.clone();
+
+    println!("num1: {}", num1);
+    println!("num2: {}", num2);
+
+    let name1 = String::from("Alice");
+    let name2 = name1.clone();
+
+    println!("name1: {}", name1);
+    println!("name2: {}", name2);
+
+    #[derive(Clone)]
+    struct Point {
+        x: i32,
+        y: i32,
+    }
+
+    let point1 = Point { x: 2, y: 5 };
+    let point2 = point1.clone();
+
+    println!("point1: ({}, {})", point1.x, point1.y);
+    println!("point2: ({}, {})", point2.x, point2.y);
+
+
 }
 
 fn take_ownership(value: String) -> String {
