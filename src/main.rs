@@ -5,6 +5,21 @@ struct Foo {
     value: usize
 }
 
+struct Person<'a> {
+    name: &'a str,
+    age: u32,
+}
+
+impl<'a> Person<'a> {
+    fn new(name: &'a str, age: u32) -> Person<'a> {
+        Person { name, age }
+    }
+
+    fn get_name(&self) -> &'a str {
+        self.name
+    }
+}
+
 fn main() {
     ownership();
     borrowing();
@@ -13,6 +28,7 @@ fn main() {
     ownership_functions();
     functions_references();
     copy_variables();
+    lifetimes();
 
     let vector = vec![Foo{value: 1}, Foo{value: 2}, Foo{value: 3}];
 
@@ -94,8 +110,32 @@ fn copy_variables() {
 
     println!("point1: ({}, {})", point1.x, point1.y);
     println!("point2: ({}, {})", point2.x, point2.y);
+}
 
+fn lifetimes() {
+    let name1 = String::from("Alice");
+    let person_name1;
+    
+    {
+        let person1 = Person::new(&name1, 25);
+        person_name1 = person1.get_name();
+    }
+    
+    // Using person_name after person is dropped will cause a potential memory leak
+    println!("Person's name: {}", person_name1);
 
+    let data = Box::new(42);
+
+    let data_ptr = &*data as *const i32;
+
+    // Simulating a memory leak by not deallocating the memory
+    // Uncomment the following line to trigger a crash due to accessing invalid memory
+    // drop(data);
+
+    // Attempting to access the memory through the dangling pointer
+    unsafe {
+        println!("Value: {}", *data_ptr);
+    }
 }
 
 fn take_ownership(value: String) -> String {
