@@ -1,4 +1,7 @@
+use core::panic;
 use std::vec;
+use std::fs::{File, OpenOptions};
+use std::io::{self, Read, Write};
 
 #[derive(Debug)]
 struct Foo {
@@ -20,6 +23,42 @@ impl<'a> Person<'a> {
     }
 }
 
+struct FileHandler {
+    file: File,
+    is_open: bool,
+}
+
+impl FileHandler {
+    fn open_file(filename: &str) -> io::Result<FileHandler> {
+        // let file = File::open(filename)?;
+        let file = OpenOptions::new().read(true).write(true).open(filename).unwrap();
+        Ok(FileHandler {
+            file,
+            is_open: true,
+        })
+    }
+
+    fn read_file(&mut self, buffer: &mut String) -> io::Result<usize> {
+        if !self.is_open {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "File handler is not open.",
+            ));
+        }
+        self.file.read_to_string(buffer)
+    }
+
+    fn write_file(&mut self, data: &[u8]) -> io::Result<usize> {
+        if !self.is_open {
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "File handler is not open.",
+            ));
+        }
+        self.file.write(data)
+    }
+}
+
 fn main() {
     ownership();
     borrowing();
@@ -34,8 +73,16 @@ fn main() {
 
     reverse_and_print(&vector);
     reverse_and_print(&vector);
-}
 
+    let filesystem: FileHandler;
+    {
+        filesystem = match filesystem_fn() {
+            Ok(filehandler) => filehandler,
+            Err(error) => panic!("Problem with filesystem: {:?}", error),
+        };
+    }
+    drop(filesystem);
+}
 
 fn ownership() {
     // Ownership and Transfer
@@ -154,4 +201,17 @@ fn reverse_and_print(foo: &Vec<Foo>) {
     for f in foo.iter().rev() {
         println!("{:?}", f.value);
     }
+}
+
+fn filesystem_fn() -> io::Result<FileHandler> {
+    let mut file_handler = FileHandler::open_file("lorem.txt")?;
+    let mut buffer = String::new();
+    let bytes_read = file_handler.read_file(&mut buffer)?;
+    println!("Read {} bytes: {:?}", bytes_read, &buffer[..bytes_read]);
+
+    let data = b"\nHello, World!";
+    let bytes_written = file_handler.write_file(data)?;
+    println!("Written {} bytes", bytes_written);
+
+    Ok(file_handler)
 }
