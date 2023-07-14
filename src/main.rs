@@ -21,6 +21,10 @@ impl<'a> Person<'a> {
     fn get_name(&self) -> &'a str {
         self.name
     }
+
+    fn get_age(&self) -> u32 {
+        self.age
+    }
 }
 
 struct FileHandler {
@@ -160,16 +164,18 @@ fn copy_variables() {
 }
 
 fn lifetimes() {
-    let name1 = String::from("Alice");
-    let person_name1;
+    let name = String::from("Alice");
+    let person_name;
+    let person_age;
     
     {
-        let person1 = Person::new(&name1, 25);
-        person_name1 = person1.get_name();
+        let person = Person::new(&name, 25);
+        person_name = person.get_name();
+        person_age = person.get_age()
     }
     
     // Using person_name after person is dropped will cause a potential memory leak
-    println!("Person's name: {}", person_name1);
+    println!("Person's name: {} , age: {}", person_name, person_age);
 
     let data = Box::new(42);
 
