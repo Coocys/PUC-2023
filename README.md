@@ -19,3 +19,6 @@ Sie haben eine API mit 4 Funktionen. open_file, read_file, write_file und close_
 - Es sollen keine File handles geleakt werden, das heißt wenn ein handle aus dem scope geht soll er geschlossen werden.
 
 All diese Anforderungen lassen sich mit Rusts Ownership system abdecken. 
+
+# Reference
+https://doc.rust-lang.org/book/
