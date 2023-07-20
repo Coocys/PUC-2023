@@ -69,7 +69,7 @@ fn main() {
     mutable_borrowing(); // M
     scoping(); // J
     ownership_functions(); // J
-    functions_references(); // J
+    functions_references(); // M
     copy_variables(); // M
 
 
@@ -101,6 +101,7 @@ fn mutable_borrowing() {
     let borrowed_mut = &mut mutable; // mutable borrowing
     borrowed_mut.push_str(", Rust!"); // borrowed_mut can modify mutable
     println!("Mutable Borrowed: {}", borrowed_mut);
+    println!("Mutable origin: {}", mutable);
 }
 
 fn scoping() {
@@ -169,6 +170,7 @@ fn lifetimes() {
     
     {
         let person = Person::new(&name, 25);
+        // drop(name);
         person_name = person.get_name();
         person_age = person.get_age()
     }
