@@ -64,28 +64,18 @@ impl FileHandler {
 }
 
 fn main() {
-    ownership();
-    borrowing();
-    mutable_borrowing();
-    scoping();
-    ownership_functions();
-    functions_references();
-    copy_variables();
-    lifetimes();
+    ownership(); // J
+    borrowing(); // M
+    mutable_borrowing(); // M
+    scoping(); // J
+    ownership_functions(); // J
+    functions_references(); // J
+    copy_variables(); // M
 
-    let vector = vec![Foo{value: 1}, Foo{value: 2}, Foo{value: 3}];
 
-    reverse_and_print(&vector);
-    reverse_and_print(&vector);
-
-    let filesystem: FileHandler;
-    {
-        filesystem = match filesystem_fn() {
-            Ok(filehandler) => filehandler,
-            Err(error) => panic!("Problem with filesystem: {:?}", error),
-        };
-    }
-    drop(filesystem);
+    lifetimes(); // J
+    list_example(); // M
+    filehandler_example(); // J
 }
 
 fn ownership() {
@@ -130,11 +120,20 @@ fn ownership_functions() {
     // println!("Owned: {}", owner);
 }
 
+fn take_ownership(value: String) -> String {
+    println!("Taking ownership: {}", value);
+    value // Ownership is returned from the function
+}
+
 fn functions_references() {
     // References in Functions
     let original = String::from("Original");
     let length = calculate_length(&original); // Passes a reference to the function
     println!("Original: {}, Length: {}", original, length);
+}
+
+fn calculate_length(s: &String) -> usize {
+    s.len() // References can be used for read-only operations
 }
 
 fn copy_variables() {
@@ -173,7 +172,7 @@ fn lifetimes() {
         person_name = person.get_name();
         person_age = person.get_age()
     }
-    
+
     // Using person_name after person is dropped will cause a potential memory leak
     println!("Person's name: {} , age: {}", person_name, person_age);
 
@@ -191,13 +190,11 @@ fn lifetimes() {
     }
 }
 
-fn take_ownership(value: String) -> String {
-    println!("Taking ownership: {}", value);
-    value // Ownership is returned from the function
-}
+fn list_example() {
+    let vector = vec![Foo{value: 1}, Foo{value: 2}, Foo{value: 3}];
 
-fn calculate_length(s: &String) -> usize {
-    s.len() // References can be used for read-only operations
+    reverse_and_print(&vector);
+    reverse_and_print(&vector);
 }
 
 fn reverse_and_print(foo: &Vec<Foo>) {
@@ -209,13 +206,24 @@ fn reverse_and_print(foo: &Vec<Foo>) {
     }
 }
 
+fn filehandler_example() {
+    let filesystem: FileHandler;
+    {
+        filesystem = match filesystem_fn() {
+            Ok(filehandler) => filehandler,
+            Err(error) => panic!("Problem with filesystem: {:?}", error),
+        };
+    }
+    drop(filesystem);
+}
+
 fn filesystem_fn() -> io::Result<FileHandler> {
     let mut file_handler = FileHandler::open_file("lorem.txt")?;
     let mut buffer = String::new();
     let bytes_read = file_handler.read_file(&mut buffer)?;
     println!("Read {} bytes: {:?}", bytes_read, &buffer[..bytes_read]);
 
-    let data = b"\nHello, World!";
+    let data: &[u8; 14] = b"\nHello, World!";
     let bytes_written = file_handler.write_file(data)?;
     println!("Written {} bytes", bytes_written);
 
